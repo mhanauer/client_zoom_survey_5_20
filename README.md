@@ -120,16 +120,32 @@ instructions_overall_dat = instructions_overall_dat %>% count(instructions_overa
 
 instructions_overall_dat$percent = as.numeric(instructions_overall_dat$n / n_instructions_overall)
 
+
+
+### Create extra annotation
+greater_instructions_overall = paste0(round(sum(instructions_overall_dat$percent[1:2]),2)*100, "%")
+greater_instructions_overall_text = paste0("% who found instructions mostly or very clear", " ", "=", " ", greater_instructions_overall)
+
+grob <- grobTree(textGrob(greater_instructions_overall_text, x=0.05,  y=0.80, hjust=0,
+                          gp=gpar(col="red", fontsize=13, fontface="italic")))
+
+
+##############
+
 instructions_overall_dat$percent = round(instructions_overall_dat$percent, 2)*100
 instructions_overall_dat$percent = paste0(instructions_overall_dat$percent, "%")
 title_instructions_overalll = paste0("Were the instructions for how to access your appointment online clear?", " ", "n=", n_instructions_overall)
+
+
+
 
 plot_instructions_overall = ggplot(instructions_overall_dat, aes(x = instructions_overall,y =n, fill = instructions_overall))+
   geom_bar(stat = "identity", position = "dodge2")+
   labs(title=title_instructions_overalll, y = "Count", x = "Response option")+
   scale_y_continuous(limits = c(0,300))+
   geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
-  theme(legend.position = "none")
+  theme(legend.position = "none")+
+  annotation_custom(grob)
 plot_instructions_overall
 
 ```
@@ -156,6 +172,13 @@ quick_overall_dat = quick_overall_dat %>% count(quick_overall)
 
 quick_overall_dat$percent = as.numeric(quick_overall_dat$n / n_quick_overall)
 
+greater_quick_overall = paste0(round(sum(quick_overall_dat$percent[1:2]),2)*100, "%")
+greater_quick_overall_text = paste0("% who were very or mostly satisfied", " ", "=", " ", greater_quick_overall)
+
+grob <- grobTree(textGrob(greater_quick_overall_text, x=0.05,  y=0.95, hjust=0,
+                          gp=gpar(col="red", fontsize=13, fontface="italic")))
+
+
 quick_overall_dat$percent = round(quick_overall_dat$percent, 2)*100
 quick_overall_dat$percent = paste0(quick_overall_dat$percent, "%")
 title_quick_overalll = paste0("Were you satisfied with how quickly you got an appointment?", " ", "n=", n_quick_overall)
@@ -163,9 +186,10 @@ title_quick_overalll = paste0("Were you satisfied with how quickly you got an ap
 plot_quick_overall = ggplot(quick_overall_dat, aes(x = quick_overall,y =n, fill = quick_overall))+
   geom_bar(stat = "identity", position = "dodge2")+
   labs(title=title_quick_overalll, y = "Count", x = "Response option")+
-  scale_y_continuous(limits = c(0,300))+
+  scale_y_continuous(limits = c(0,210))+
   geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
-  theme(legend.position = "none")
+  theme(legend.position = "none")+
+  annotation_custom(grob)
 plot_quick_overall
 ```
 communicate overall
@@ -242,6 +266,86 @@ recommend
 Would you recommend Centerstone's telehealth services to your Family and Friends?
 1, Definitely | 2, Very Likely | 3, Somewhat Likely | 4, Unlikely | 5, Would not recommend
 ```{r}
+recommend_overall_dat = na.omit(data.frame(recommend_overall = tele_zoom_dat_complete$recommend))
+n_recommend_overall = dim(recommend_overall_dat)[1]
+
+recommend_overall_dat$recommend_overall = recode(recommend_overall_dat$recommend_overall, "1" = "Definitely", "2" = "Very Likely", "3" = "Somewhat Likely", "4" = "Unlikely", "5" = "Would not recommend")
+
+## relevel them
+recommend_overall_dat$recommend_overall = as.factor(recommend_overall_dat$recommend_overall)
+recommend_overall_dat$recommend_overall = factor(recommend_overall_dat$recommend_overall, levels = c("Definitely", "Very Likely", "Somewhat Likely", "Unlikely", "Would not recommend"))
+
+recommend_overall_dat = recommend_overall_dat %>% count(recommend_overall)
+
+recommend_overall_dat$percent = as.numeric(recommend_overall_dat$n / n_recommend_overall)
+
+greater_recommend_overall = paste0(round(sum(recommend_overall_dat$percent[1:2]),2)*100, "%")
+greater_recommend_overall_text = paste0("% who would definitely or are very likely to recommend Centerstone", " ", "=", " ", greater_recommend_overall)
+
+grob <- grobTree(textGrob(greater_recommend_overall_text, x=0.05,  y=0.8, hjust=0,
+                          gp=gpar(col="red", fontsize=13, fontface="italic")))
+
+
+recommend_overall_dat$percent = round(recommend_overall_dat$percent, 2)*100
+recommend_overall_dat$percent = paste0(recommend_overall_dat$percent, "%")
+title_recommend_overalll = paste0("Would you recommend Centerstone's telehealth services to your Family \n and Friends?", " ", "n=", n_recommend_overall)
+
+plot_recommend_overall = ggplot(recommend_overall_dat, aes(x = recommend_overall,y =n, fill = recommend_overall))+
+  geom_bar(stat = "identity", position = "dodge2")+
+  labs(title=title_recommend_overalll, y = "Count", x = "Response option")+
+  scale_y_continuous(limits = c(0,200))+
+  geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
+  theme(legend.position = "none")+
+  annotation_custom(grob)
+  
+plot_recommend_overall
+```
+expectation
+How would you rate your overall experience with telehealth at Centerstone?
+1, 1 did not meet expectation | 2, 2 | 3, 3 | 4, 4 | 5, 5 | 6, 6 | 7, 7 | 8, 8 | 9, 9 | 10, 10 exceeds expectation
+
+https://www.qualtrics.com/experience-management/customer/net-promoter-score/
+https://www.netpromoter.com/know/
+https://www.netpromotersystem.com/about/measuring-your-net-promoter-score/
+```{r}
+expectation_overall_dat = na.omit(data.frame(expectation_overall = tele_zoom_dat_complete$expectation))
+n_expectation_overall = dim(expectation_overall_dat)[1]
+
+expectation_overall_dat$expectation_overall = ifelse(expectation_overall_dat$expectation_overall < 7, "Detractors", ifelse(expectation_overall_dat$expectation_overall < 9, "Passives", ifelse(expectation_overall_dat$expectation_overall >=9, "Promoters", "Wrong")))
+
+describe.factor(expectation_overall_dat$expectation_overall)
+
+expectation_overall_dat$expectation_overall = recode(expectation_overall_dat$expectation_overall, "1" = "Definitely", "2" = "Very Likely", "3" = "Somewhat Likely", "4" = "Unlikely", "5" = "Would not expectation")
+
+## relevel them
+expectation_overall_dat$expectation_overall = as.factor(expectation_overall_dat$expectation_overall)
+expectation_overall_dat$expectation_overall = factor(expectation_overall_dat$expectation_overall, levels = c("Definitely", "Very Likely", "Somewhat Likely", "Unlikely", "Would not expectation"))
+
+expectation_overall_dat = expectation_overall_dat %>% count(expectation_overall)
+
+expectation_overall_dat$percent = as.numeric(expectation_overall_dat$n / n_expectation_overall)
+
+greater_expectation_overall = paste0(round(sum(expectation_overall_dat$percent[1:2]),2)*100, "%")
+greater_expectation_overall_text = paste0("% who would definitely or are very likely to expectation Centerstone", " ", "=", " ", greater_expectation_overall)
+
+grob <- grobTree(textGrob(greater_expectation_overall_text, x=0.05,  y=0.8, hjust=0,
+                          gp=gpar(col="red", fontsize=13, fontface="italic")))
+
+
+expectation_overall_dat$percent = round(expectation_overall_dat$percent, 2)*100
+expectation_overall_dat$percent = paste0(expectation_overall_dat$percent, "%")
+title_expectation_overalll = paste0("Would you expectation Centerstone's telehealth services to your Family \n and Friends?", " ", "n=", n_expectation_overall)
+
+plot_expectation_overall = ggplot(expectation_overall_dat, aes(x = expectation_overall,y =n, fill = expectation_overall))+
+  geom_bar(stat = "identity", position = "dodge2")+
+  labs(title=title_expectation_overalll, y = "Count", x = "Response option")+
+  scale_y_continuous(limits = c(0,200))+
+  geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
+  theme(legend.position = "none")+
+  annotation_custom(grob)
+
+plot_expectation_overall
+
 
 ```
 
