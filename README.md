@@ -527,10 +527,172 @@ plot_gender_overall = ggplot(gender_overall_dat, aes(x = reorder(gender_overall,
 plot_gender_overall
 
 ```
+For presentation
+Get graphs of substance use for client and clincian
+Get graph of preferences
+
+Clinician data prep
+
+Calculate statistical difference: https://stattrek.com/hypothesis-test/difference-in-proportions.aspx
+```{r}
+
+sub_overall_dat
+
+sub_overall_dat = tele_zoom_dat_complete
+sub_overall_dat$video_audio
+### Get rid of those who said only audio so the statement about televideo in the title is true
+sub_overall_dat = subset(sub_overall_dat, video_audio == 1)
+sub_overall_dat$video_audio
+sub_overall_dat = sub_overall_dat[,c(9)]
+sub_overall_dat = na.omit(sub_overall_dat)
+### Subset 6
+sub_overall_dat = subset(sub_overall_dat, sub_overall_dat != 6)
+sub_overall_dat
+n_sub_overall_dat = length(sub_overall_dat)
+
+sub_overall_dat = ifelse(sub_overall_dat > 3, 1, 0)
+sub_overall_dat = sum(sub_overall_dat)
+percent_sub_overall = round(sub_overall_dat / n_sub_overall_dat,2)
+sub_client_dat = data.frame(n = n_sub_overall_dat, percent =  percent_sub_overall)
+
+
+setwd("T:/CRI_Research/telehealth_evaluation/data_codebooks/satisfaction")
+tech_cri_dat = read.csv("TelehealthSnapMDZoom_DATA_2020-05-20_0453.csv", header = TRUE, na.strings = c(""))
+tech_cri_dat = tech_cri_dat[-c(1:6),]
+
+tech_cri_dat_complete  = subset(tech_cri_dat, my_first_instrument_timestamp != "[not completed]")
+telehealth_sat_dat = clincian_survey_dat
+
+
+n_telehealth_sat_dat = dim(telehealth_sat_dat)[1]
+## Subset 6, because you are a dumbass!!!!  6 = N/A
+telehealth_sat_dat = telehealth_sat_dat[,110:113]
+telehealth_sat_dat[telehealth_sat_dat == 6] = NA
+telehealth_sat_p = telehealth_sat_dat
+telehealth_sat_p = apply(telehealth_sat_p, 2, function(x){ifelse(x > 3,1,0)})
+telehealth_sat_p = data.frame(telehealth_sat_p)
+telehealth_sat_p_complete = na.omit(telehealth_sat_p)
+n_telehealth_sat_p_complete  = dim(telehealth_sat_p_complete)[1]
+telehealth_sat_p_complete_n = apply(telehealth_sat_p_complete, 2, sum)
+telehealth_sat_p_complete_p = round(telehealth_sat_p_complete_n/n_telehealth_sat_p_complete,2)
+telehealth_sat_p_complete = rbind(telehealth_sat_p_complete_n, telehealth_sat_p_complete_p)
+rownames(telehealth_sat_p_complete) = c("n", "percent")
+telehealth_sat_p_complete
+sub_clinician_dat = telehealth_sat_p_complete[,2]
+### Stack percentages and n's
+sub_client_clinician = rbind(sub_client_dat, sub_clinician_dat)
+
+
+### Create an overall average percentage greater across other constructs of communication, manage, and recovery
+sat_clinician_dat = tele_zoom_dat_complete
+sat_clinician_dat = sat_clinician_dat[,c(8,10,11)]
+sat_clinician_dat = na.omit(sat_clinician_dat)
+n_sat_clinician_dat = dim(sat_clinician_dat)[1]
+sat_clinician_dat = apply(sat_clinician_dat, 2, function(x){ifelse(x > 3, 1, 0)})
+sat_clinician_dat = data.frame(sat_clinician_dat)
+
+sat_clinician_dat = apply(sat_clinician_dat, 2, sum)
+percent_sat_clinician = round(sat_clinician_dat / n_sat_clinician_dat,2)
+sat_clinician_dat = data.frame(sat_clinician_dat, percent_sat_clinician)
+sat_clinician_dat = apply(sat_clinician_dat, 2, mean)
+sat_clinician_dat = data.frame(sat_clinician_dat)
+sat_clinician_dat[1,1] = round(sat_clinician_dat[1,1],0)
+sat_clinician_dat
+sat_clinician_dat = data.frame(sat_clinician_dat)
+sat_clinician_dat = t(sat_clinician_dat)
+colnames(sat_clinician_dat) = c("n", "percent")
+
+sat_client_dat =  telehealth_sat_p_complete[,c(1,3,4)]
+sat_client_dat = apply(sat_client_dat, 1, mean)
+sat_client_dat = round(sat_client_dat, 2)
+sat_client_dat = data.frame(sat_client_dat)
+sat_client_dat = t(sat_client_dat)
+sat_client_dat
+
+sat_non_sub_client_clinician = rbind(sat_clinician_dat, sat_client_dat)
+### Create weighted mean
+sat_non_sub_client_clinician = data.frame(sat_non_sub_client_clinician)
+wt = c(sat_non_sub_client_clinician$n)/sum(sat_non_sub_client_clinician$n)
+sat_non_sub_client_clinician_wt_p = weighted.mean(sat_non_sub_client_clinician$percent, wt)
+sat_non_sub_client_clinician_n = round(mean(sat_non_sub_client_clinician$n),2)
+
+sub_client_clinician
+
+sat_non_sub_client_clinician = data.frame(n = sat_non_sub_client_clinician_n, percent = sat_non_sub_client_clinician_wt_p)
+sat_non_sub_client_clinician = round(sat_non_sub_client_clinician,2)
+sat_non_sub_client_clinician
+
+
+non_sub_and_sub_client_clinican = rbind(sub_client_clinician, sat_non_sub_client_clinician)
+non_sub_and_sub_client_clinican$response = c("Client sub use", "Clinician sub use support", "Weighted average client / clinician non-sub use")
+non_sub_and_sub_client_clinican
+
+```
+Statistical test for client clincian sub
+p = (p1 * n1 + p2 * n2) / (n1 + n2)
+SE = sqrt{ p * ( 1 - p ) * [ (1/n1) + (1/n2) ] 
+z = (p1 - p2) / SE
+https://www.cyclismo.org/tutorial/R/pValues.html
+```{r}
+
+### Client versus average
+p_client_sub_v_wt = (non_sub_and_sub_client_clinican$percent[1]*non_sub_and_sub_client_clinican$n[1] + non_sub_and_sub_client_clinican$percent[3]*non_sub_and_sub_client_clinican$n[3])/(non_sub_and_sub_client_clinican$n[1]+ non_sub_and_sub_client_clinican$n[3])
+
+
+se_p_client_sub_v_wt = sqrt(p_client_sub_v_wt*(1-p_client_sub_v_wt) * ( (1/non_sub_and_sub_client_clinican$n[1]) +(1/non_sub_and_sub_client_clinican$n[3])))
+
+z_client_sub_v_wt = (non_sub_and_sub_client_clinican$percent[1] - non_sub_and_sub_client_clinican$percent[3])/se_p_client_sub_v_wt
+z_client_sub_v_wt
+p_client_sub_v_wt = round(2*pnorm(-abs(z_client_sub_v_wt)),4)
+p_client_sub_v_wt
+
+### Clinician versus average
+p_clinician_sub_v_wt = (non_sub_and_sub_client_clinican$percent[2]*non_sub_and_sub_client_clinican$n[2] + non_sub_and_sub_client_clinican$percent[3]*non_sub_and_sub_client_clinican$n[3])/(non_sub_and_sub_client_clinican$n[2]+ non_sub_and_sub_client_clinican$n[3])
+
+
+se_p_clinician_sub_v_wt = sqrt(p_clinician_sub_v_wt*(1-p_clinician_sub_v_wt) * ( (1/non_sub_and_sub_client_clinican$n[2]) +(1/non_sub_and_sub_client_clinican$n[3])))
+
+z_clinician_sub_v_wt = (non_sub_and_sub_client_clinican$percent[2] - non_sub_and_sub_client_clinican$percent[3])/se_p_clinician_sub_v_wt
+z_clinician_sub_v_wt
+p_clinician_sub_v_wt = round(2*pnorm(-abs(z_clinician_sub_v_wt)),4)
+p_clinician_sub_v_wt
+
+#Clinician versus client
+p_clinician_sub_v_client = (non_sub_and_sub_client_clinican$percent[2]*non_sub_and_sub_client_clinican$n[2] + non_sub_and_sub_client_clinican$percent[1]*non_sub_and_sub_client_clinican$n[1])/(non_sub_and_sub_client_clinican$n[2]+ non_sub_and_sub_client_clinican$n[1])
+
+
+se_p_clinician_sub_v_client = sqrt(p_clinician_sub_v_client*(1-p_clinician_sub_v_client) * ( (1/non_sub_and_sub_client_clinican$n[2]) +(1/non_sub_and_sub_client_clinican$n[1])))
+
+z_clinician_sub_v_client = (non_sub_and_sub_client_clinican$percent[2] - non_sub_and_sub_client_clinican$percent[1])/se_p_clinician_sub_v_client
+z_clinician_sub_v_client
+p_clinician_sub_v_client = round(2*pnorm(-abs(z_clinician_sub_v_client)),4)
+p_clinician_sub_v_client
 
 
 
+```
+
+
+Create graph for client clincian sub
+
+Need average satisfaction across client and clincian
+```{r}
+
+non_sub_and_sub_client_clinican_text = paste0("All comparisons statistically significant at the .05 alpha level")
+grob <- grobTree(textGrob(non_sub_and_sub_client_clinican_text, x=0.05,  y=0.80, hjust=0,
+                          gp=gpar(col="red", fontsize=13, fontface="italic")))
 
 
 
+title_non_sub_and_sub_client_clinican = paste0("Comparing % of clients and clinicians who agree or greater with \n televideo supporting communication, manage, and recovery to support \n for substance use")
 
+plot_non_sub_and_sub_client_clinican = ggplot(non_sub_and_sub_client_clinican, aes(x = reorder(response, -percent),y =percent, fill = response))+
+  geom_bar(stat = "identity", position = "dodge2")+
+  labs(title=title_non_sub_and_sub_client_clinican, y = "Percent", x = "Sample")+
+  scale_y_continuous(limits = c(0,1))+
+   geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
+  theme(legend.position = "none")+
+  annotation_custom(grob)
+
+plot_non_sub_and_sub_client_clinican
+```
