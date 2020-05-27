@@ -696,3 +696,90 @@ plot_non_sub_and_sub_client_clinican = ggplot(non_sub_and_sub_client_clinican, a
 
 plot_non_sub_and_sub_client_clinican
 ```
+Data cleaning for preferences
+```{r}
+##Client
+prefer_service_client_dat = na.omit(data.frame(televideo = tele_zoom_dat_complete$prefer_service___1, telephone = tele_zoom_dat_complete$prefer_service___2, in_person = tele_zoom_dat_complete$prefer_service___3))
+
+n_prefer_service_client = dim(prefer_service_client_dat)[1]
+
+prefer_service_client_dat = apply(prefer_service_client_dat, 2, sum)
+
+percent_prefer_service_client = round(prefer_service_client_dat / n_prefer_service_client,2)
+prefer_service_client_dat = data.frame(t(rbind(prefer_service_client_dat, percent_prefer_service_client)))
+var_names =  rownames(prefer_service_client_dat)
+prefer_service_client_dat = data.frame(var_names, prefer_service_client_dat)
+rownames(prefer_service_client_dat) = NULL
+prefer_service_client_dat
+colnames(prefer_service_client_dat) = c("response_options", "count", "percent")
+prefer_service_client_dat
+
+### Clincian
+prefer_service_clinician = tech_cri_dat_complete[,118:120]
+prefer_service_clinician = apply(prefer_service_clinician, 2, sum)
+prefer_service_clinician = data.frame(prefer_service_clinician)
+prefer_service_clinician$percent = prefer_service_clinician$prefer_service_clinician / n_clinician_survey
+prefer_service_clinician
+response_options =  c("televideo", "telephone", "in_person")
+prefer_service_clinician = data.frame(response_options, prefer_service_clinician)
+rownames(prefer_service_clinician) = NULL
+colnames(prefer_service_clinician)[2] = "count"
+prefer_service_clinician$percent = round(prefer_service_clinician$percent,2)
+prefer_service_clinician
+
+prefer_service_clinician_client_dat= rbind(prefer_service_client_dat, prefer_service_clinician)
+prefer_service_clinician_client_dat$client_clinician = c("client", "client","client", "clinician", "clinician", "clinician")
+prefer_service_clinician_client_dat$response_options = recode(prefer_service_clinician_client_dat$response_options, "in_person" = "in person", "telephone" = "teleaudio / telephone")
+
+```
+Now conduct statistical tests
+```{r}
+
+### Televideo client versus televideo clinician
+p_tv_client_v_clinic = (prefer_service_clinician_client_dat$percent[1]*prefer_service_clinician_client_dat$count[1] + prefer_service_clinician_client_dat$percent[4]*prefer_service_clinician_client_dat$count[4])/(prefer_service_clinician_client_dat$count[1]+ prefer_service_clinician_client_dat$count[4])
+
+
+se_tv_client_v_clinic = sqrt(p_tv_client_v_clinic*(1-p_tv_client_v_clinic) * ( (1/prefer_service_clinician_client_dat$count[1]) +(1/prefer_service_clinician_client_dat$count[4])))
+
+z_tv_client_v_clinic = (prefer_service_clinician_client_dat$percent[1] - prefer_service_clinician_client_dat$percent[4])/se_tv_client_v_clinic
+z_tv_client_v_clinic
+p_tv_client_v_clinic = round(2*pnorm(-abs(z_tv_client_v_clinic)),4)
+p_tv_client_v_clinic
+
+### Teleaudio client versus clinician
+
+#Face to face client versus clinician
+p_ftf_client_v_clinic = (prefer_service_clinician_client_dat$percent[3]*prefer_service_clinician_client_dat$count[3] + prefer_service_clinician_client_dat$percent[6]*prefer_service_clinician_client_dat$count[6])/(prefer_service_clinician_client_dat$count[3]+ prefer_service_clinician_client_dat$count[6])
+
+
+se_ftf_client_v_clinic = sqrt(p_ftf_client_v_clinic*(1-p_ftf_client_v_clinic) * ( (1/prefer_service_clinician_client_dat$count[3]) +(1/prefer_service_clinician_client_dat$count[6])))
+
+z_ftf_client_v_clinic = (prefer_service_clinician_client_dat$percent[3] - prefer_service_clinician_client_dat$percent[6])/se_ftf_client_v_clinic
+z_ftf_client_v_clinic
+p_ftf_client_v_clinic = round(3*pnorm(-abs(z_ftf_client_v_clinic)),4)
+p_ftf_client_v_clinic
+
+```
+Now try graph with preferences
+
+** use the term teleaudio in staff survey and the term telephone.  teleaudio could include Zoom and Snap relative telephpne which does not
+```{r}
+pref_client_clinican_text = paste0("Statistically significant (p <.001) differences \n between in person and telephone between client and clinician")
+grob <- grobTree(textGrob(pref_client_clinican_text, x=0.05,  y=0.95, hjust=0,
+                          gp=gpar(col="red", fontsize=10, fontface="italic")))
+
+title_prefer_service_clinician_client = c("% of preferences of clients and clinicians future service delivery models")
+
+plot_prefer_service_clinician_client = ggplot(prefer_service_clinician_client_dat, aes(x = reorder(response_options, -percent),y =percent, fill = client_clinician))+
+  geom_bar(stat = "identity", position = "dodge2")+
+  labs(title=title_prefer_service_clinician_client, y = "Percent", x = "Response option")+
+  scale_y_continuous(limits = c(0,1))+
+  geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
+  labs(fill = "Client or Clinician")+
+  annotation_custom(grob)
+
+plot_prefer_service_clinician_client
+```
+
+
+
