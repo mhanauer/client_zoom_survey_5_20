@@ -535,9 +535,6 @@ Clinician data prep
 
 Calculate statistical difference: https://stattrek.com/hypothesis-test/difference-in-proportions.aspx
 ```{r}
-
-sub_overall_dat
-
 sub_overall_dat = tele_zoom_dat_complete
 sub_overall_dat$video_audio
 ### Get rid of those who said only audio so the statement about televideo in the title is true
@@ -557,10 +554,14 @@ sub_client_dat = data.frame(n = n_sub_overall_dat, percent =  percent_sub_overal
 
 
 setwd("T:/CRI_Research/telehealth_evaluation/data_codebooks/satisfaction")
-tech_cri_dat = read.csv("TelehealthSnapMDZoom_DATA_2020-05-20_0453.csv", header = TRUE, na.strings = c(""))
+tech_cri_dat = read.csv("TelehealthSnapMDZoom_DATA_2020-05-27_1016.csv", header = TRUE, na.strings = c(""))
 tech_cri_dat = tech_cri_dat[-c(1:6),]
 
 tech_cri_dat_complete  = subset(tech_cri_dat, my_first_instrument_timestamp != "[not completed]")
+
+### Clinician survey data 
+clincian_survey_dat = subset(tech_cri_dat_complete, job_title != 3)
+clincian_survey_dat = subset(clincian_survey_dat, service_provided___6 != 1)
 telehealth_sat_dat = clincian_survey_dat
 
 
@@ -569,9 +570,12 @@ n_telehealth_sat_dat = dim(telehealth_sat_dat)[1]
 telehealth_sat_dat = telehealth_sat_dat[,110:113]
 telehealth_sat_dat[telehealth_sat_dat == 6] = NA
 telehealth_sat_p = telehealth_sat_dat
+describe.factor(telehealth_sat_p$substance)
 telehealth_sat_p = apply(telehealth_sat_p, 2, function(x){ifelse(x > 3,1,0)})
 telehealth_sat_p = data.frame(telehealth_sat_p)
+### When you na.omit you are omitting for all the variables not just substance so you lose a few extra
 telehealth_sat_p_complete = na.omit(telehealth_sat_p)
+describe.factor(telehealth_sat_p_complete$substance)
 n_telehealth_sat_p_complete  = dim(telehealth_sat_p_complete)[1]
 telehealth_sat_p_complete_n = apply(telehealth_sat_p_complete, 2, sum)
 telehealth_sat_p_complete_p = round(telehealth_sat_p_complete_n/n_telehealth_sat_p_complete,2)
@@ -581,7 +585,7 @@ telehealth_sat_p_complete
 sub_clinician_dat = telehealth_sat_p_complete[,2]
 ### Stack percentages and n's
 sub_client_clinician = rbind(sub_client_dat, sub_clinician_dat)
-
+sub_client_clinician
 
 ### Create an overall average percentage greater across other constructs of communication, manage, and recovery
 sat_clinician_dat = tele_zoom_dat_complete
@@ -639,7 +643,7 @@ https://www.cyclismo.org/tutorial/R/pValues.html
 p_client_sub_v_wt = (non_sub_and_sub_client_clinican$percent[1]*non_sub_and_sub_client_clinican$n[1] + non_sub_and_sub_client_clinican$percent[3]*non_sub_and_sub_client_clinican$n[3])/(non_sub_and_sub_client_clinican$n[1]+ non_sub_and_sub_client_clinican$n[3])
 
 
-se_p_client_sub_v_wt = sqrt(p_client_sub_v_wt*(1-p_client_sub_v_wt) * ( (1/non_sub_and_sub_client_clinican$n[1]) +(1/non_sub_and_sub_client_clinican$n[3])))
+se_p_client_sub_v_wt = sqrt(p_client_sub_v_wt*(1-p_client_sub_v_wt) * ( (1/non_sub_and_sub_client_clinican$n[1]) +(1/non_sub_and_sub_client_clinican$n[3]) ) )
 
 z_client_sub_v_wt = (non_sub_and_sub_client_clinican$percent[1] - non_sub_and_sub_client_clinican$percent[3])/se_p_client_sub_v_wt
 z_client_sub_v_wt
@@ -671,7 +675,7 @@ p_clinician_sub_v_client
 
 
 ```
-
+Age and location
 
 Create graph for client clincian sub
 
@@ -679,7 +683,7 @@ Need average satisfaction across client and clincian
 ```{r}
 
 non_sub_and_sub_client_clinican_text = paste0("All comparisons statistically significant at the .05 alpha level")
-grob <- grobTree(textGrob(non_sub_and_sub_client_clinican_text, x=0.05,  y=0.80, hjust=0,
+grob <- grobTree(textGrob(non_sub_and_sub_client_clinican_text, x=0.05,  y=0.90, hjust=0,
                           gp=gpar(col="red", fontsize=13, fontface="italic")))
 
 
@@ -690,7 +694,7 @@ plot_non_sub_and_sub_client_clinican = ggplot(non_sub_and_sub_client_clinican, a
   geom_bar(stat = "identity", position = "dodge2")+
   labs(title=title_non_sub_and_sub_client_clinican, y = "Percent", x = "Sample")+
   scale_y_continuous(limits = c(0,1))+
-   geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
+   geom_text(aes(label = percent), position=position_dodge(width=0.90), vjust=-0.25)+
   theme(legend.position = "none")+
   annotation_custom(grob)
 
@@ -747,6 +751,16 @@ p_tv_client_v_clinic = round(2*pnorm(-abs(z_tv_client_v_clinic)),4)
 p_tv_client_v_clinic
 
 ### Teleaudio client versus clinician
+p_tele_a_client_v_clinic = (prefer_service_clinician_client_dat$percent[2]*prefer_service_clinician_client_dat$count[2] + prefer_service_clinician_client_dat$percent[5]*prefer_service_clinician_client_dat$count[5])/(prefer_service_clinician_client_dat$count[2]+ prefer_service_clinician_client_dat$count[5])
+
+
+se_tele_a_client_v_clinic = sqrt(p_tele_a_client_v_clinic*(1-p_tele_a_client_v_clinic) * ( (1/prefer_service_clinician_client_dat$count[2]) +(1/prefer_service_clinician_client_dat$count[5])))
+
+z_tele_a_client_v_clinic = (prefer_service_clinician_client_dat$percent[2] - prefer_service_clinician_client_dat$percent[5])/se_tele_a_client_v_clinic
+z_tele_a_client_v_clinic
+p_tele_a_client_v_clinic = round(2*pnorm(-abs(z_tele_a_client_v_clinic)),4)
+p_tele_a_client_v_clinic
+
 
 #Face to face client versus clinician
 p_ftf_client_v_clinic = (prefer_service_clinician_client_dat$percent[3]*prefer_service_clinician_client_dat$count[3] + prefer_service_clinician_client_dat$percent[6]*prefer_service_clinician_client_dat$count[6])/(prefer_service_clinician_client_dat$count[3]+ prefer_service_clinician_client_dat$count[6])
@@ -764,7 +778,7 @@ Now try graph with preferences
 
 ** use the term teleaudio in staff survey and the term telephone.  teleaudio could include Zoom and Snap relative telephpne which does not
 ```{r}
-pref_client_clinican_text = paste0("Statistically significant (p <.001) differences \n between in person and telephone between client and clinician")
+pref_client_clinican_text = paste0("Statistically significant (p <.001) differences \n between in person and teleaudio / telephone between client and clinician")
 grob <- grobTree(textGrob(pref_client_clinican_text, x=0.05,  y=0.95, hjust=0,
                           gp=gpar(col="red", fontsize=10, fontface="italic")))
 
