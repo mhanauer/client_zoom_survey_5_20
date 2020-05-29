@@ -554,7 +554,7 @@ sub_client_dat = data.frame(n = n_sub_overall_dat, percent =  percent_sub_overal
 
 
 setwd("T:/CRI_Research/telehealth_evaluation/data_codebooks/satisfaction")
-tech_cri_dat = read.csv("TelehealthSnapMDZoom_DATA_2020-05-27_1016.csv", header = TRUE, na.strings = c(""))
+tech_cri_dat = read.csv("TelehealthSnapMDZoom_DATA_2020-05-28_1508.csv", header = TRUE, na.strings = c(""))
 tech_cri_dat = tech_cri_dat[-c(1:6),]
 
 tech_cri_dat_complete  = subset(tech_cri_dat, my_first_instrument_timestamp != "[not completed]")
@@ -705,7 +705,10 @@ Data cleaning for preferences
 ##Client
 prefer_service_client_dat = na.omit(data.frame(televideo = tele_zoom_dat_complete$prefer_service___1, telephone = tele_zoom_dat_complete$prefer_service___2, in_person = tele_zoom_dat_complete$prefer_service___3))
 
-n_prefer_service_client = dim(prefer_service_client_dat)[1]
+clincian_survey_dat = subset(tech_cri_dat_complete, job_title != 3)
+clincian_survey_dat = subset(clincian_survey_dat, service_provided___6 != 1)
+n_clinician_survey = dim(clincian_survey_dat)[1]
+
 
 prefer_service_client_dat = apply(prefer_service_client_dat, 2, sum)
 
@@ -720,10 +723,11 @@ prefer_service_client_dat
 
 ### Clincian
 prefer_service_clinician = tech_cri_dat_complete[,118:120]
+n_prefer_service_clinician = dim(prefer_service_clinician)[1]
 prefer_service_clinician = apply(prefer_service_clinician, 2, sum)
 prefer_service_clinician = data.frame(prefer_service_clinician)
 prefer_service_clinician$percent = prefer_service_clinician$prefer_service_clinician / n_clinician_survey
-prefer_service_clinician
+
 response_options =  c("televideo", "telephone", "in_person")
 prefer_service_clinician = data.frame(response_options, prefer_service_clinician)
 rownames(prefer_service_clinician) = NULL
@@ -778,7 +782,7 @@ Now try graph with preferences
 
 ** use the term teleaudio in staff survey and the term telephone.  teleaudio could include Zoom and Snap relative telephpne which does not
 ```{r}
-pref_client_clinican_text = paste0("Statistically significant (p <.001) differences \n between in person and teleaudio / telephone between client and clinician")
+pref_client_clinican_text = paste0("All differences between client and clinician are statistically significant \n at .05 alpha level")
 grob <- grobTree(textGrob(pref_client_clinican_text, x=0.05,  y=0.95, hjust=0,
                           gp=gpar(col="red", fontsize=10, fontface="italic")))
 
