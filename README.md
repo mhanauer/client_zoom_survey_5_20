@@ -25,7 +25,7 @@ dim(tele_zoom_dat_complete)
 library(naniar)
 ## use pairwise
 miss_var_summary(tele_zoom_dat_complete)
-
+dim(tele_zoom_dat_complete)
 ### After removing the incomplete only found one staff who took the survey on accident
 tele_zoom_dat_complete = subset(tele_zoom_dat_complete, record_id != 37)
 ```
@@ -346,7 +346,7 @@ plot_expectation_overall = ggplot(expectation_overall_dat, aes(x = expectation_o
 
 plot_expectation_overall
 
-
+.18*395
 ```
 prefer_service
 In the future, how would you prefer to receive services from Centerstone? (select all that apply)
@@ -383,8 +383,6 @@ plot_prefer_service_overall = ggplot(prefer_service_overall_dat, aes(x = reorder
   theme(legend.position = "none")
 
 plot_prefer_service_overall
-
-
 ```
 benefits
 Code later
@@ -703,16 +701,21 @@ plot_non_sub_and_sub_client_clinican
 Data cleaning for preferences
 ```{r}
 ##Client
+
 prefer_service_client_dat = na.omit(data.frame(televideo = tele_zoom_dat_complete$prefer_service___1, telephone = tele_zoom_dat_complete$prefer_service___2, in_person = tele_zoom_dat_complete$prefer_service___3))
 
 clincian_survey_dat = subset(tech_cri_dat_complete, job_title != 3)
 clincian_survey_dat = subset(clincian_survey_dat, service_provided___6 != 1)
 n_clinician_survey = dim(clincian_survey_dat)[1]
 
+n_prefer_service_client = dim(prefer_service_client_dat)[1]
 
 prefer_service_client_dat = apply(prefer_service_client_dat, 2, sum)
 
 percent_prefer_service_client = round(prefer_service_client_dat / n_prefer_service_client,2)
+
+
+
 prefer_service_client_dat = data.frame(t(rbind(prefer_service_client_dat, percent_prefer_service_client)))
 var_names =  rownames(prefer_service_client_dat)
 prefer_service_client_dat = data.frame(var_names, prefer_service_client_dat)
@@ -798,6 +801,7 @@ plot_prefer_service_clinician_client = ggplot(prefer_service_clinician_client_da
 
 plot_prefer_service_clinician_client
 ```
+
 
 
 
