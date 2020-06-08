@@ -43,7 +43,7 @@ describe.factor(tele_zoom_dat_complete$video_audio)
 video_audio_overall_dat = na.omit(data.frame(video_audio_overall = tele_zoom_dat_complete$video_audio))
 n_video_audio_overall = dim(video_audio_overall_dat)[1]
 
-video_audio_overall_dat$video_audio_overall = recode(video_audio_overall_dat$video_audio_overall, "1" = "Yes video and audio", "2" = "No audio only")
+video_audio_overall_dat$video_audio_overall = dplyr::recode(video_audio_overall_dat$video_audio_overall, "1" = "Yes video and audio", "2" = "No audio only")
 
 
 
@@ -76,7 +76,7 @@ return_client_overall_dat = tele_zoom_dat_complete
 return_client_overall_dat = na.omit(data.frame(return_client_overall = tele_zoom_dat_complete$return_client))
 n_return_client_overall = dim(return_client_overall_dat)[1]
 
-return_client_overall_dat$return_client_overall = recode(return_client_overall_dat$return_client_overall, "1" = "New", "2" = "Returning")
+return_client_overall_dat$return_client_overall = dplyr::recode(return_client_overall_dat$return_client_overall, "1" = "New", "2" = "Returning")
 
 
 
@@ -112,7 +112,7 @@ describe.factor(tele_zoom_dat_complete$instructions)
 instructions_overall_dat = na.omit(data.frame(instructions_overall = tele_zoom_dat_complete$instructions))
 n_instructions_overall = dim(instructions_overall_dat)[1]
 
-instructions_overall_dat$instructions_overall = recode(instructions_overall_dat$instructions_overall, "1" = "Very Clear", "2" = "Mostly Clear", "3" = "Somewhat Clear", "4" = "Not at all Clear", "5" = "Not Applicable")
+instructions_overall_dat$instructions_overall = dplyr::recode(instructions_overall_dat$instructions_overall, "1" = "Very Clear", "2" = "Mostly Clear", "3" = "Somewhat Clear", "4" = "Not at all Clear", "5" = "Not Applicable")
 
 ## relevel them
 instructions_overall_dat$instructions_overall = as.factor(instructions_overall_dat$instructions_overall)
@@ -162,7 +162,7 @@ describe.factor(tele_zoom_dat_complete$quick)
 quick_overall_dat = na.omit(data.frame(quick_overall = tele_zoom_dat_complete$quick))
 n_quick_overall = dim(quick_overall_dat)[1]
 
-quick_overall_dat$quick_overall = recode(quick_overall_dat$quick_overall, "1" = "Very Satisfied", "2" = "Mostly Satisfied", "3" = "Somewhat Satisfied", "4" = "Not Satisfied", "5" = "Not Applicable")
+quick_overall_dat$quick_overall = dplyr::recode(quick_overall_dat$quick_overall, "1" = "Very Satisfied", "2" = "Mostly Satisfied", "3" = "Somewhat Satisfied", "4" = "Not Satisfied", "5" = "Not Applicable")
 
 ## relevel them
 quick_overall_dat$quick_overall = as.factor(quick_overall_dat$quick_overall)
