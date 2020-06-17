@@ -577,7 +577,7 @@ describe.factor(telehealth_sat_p_complete$substance)
 n_telehealth_sat_p_complete  = dim(telehealth_sat_p_complete)[1]
 telehealth_sat_p_complete_n = apply(telehealth_sat_p_complete, 2, sum)
 telehealth_sat_p_complete_p = round(telehealth_sat_p_complete_n/n_telehealth_sat_p_complete,2)
-telehealth_sat_p_complete = rbind(telehealth_sat_p_complete_n, telehealth_sat_p_complete_p)
+telehealth_sat_p_complete = rbind(rep(n_telehealth_sat_p_complete,3), telehealth_sat_p_complete_p)
 rownames(telehealth_sat_p_complete) = c("n", "percent")
 telehealth_sat_p_complete
 sub_clinician_dat = telehealth_sat_p_complete[,2]
@@ -598,7 +598,7 @@ percent_sat_clinician = round(sat_clinician_dat / n_sat_clinician_dat,2)
 sat_clinician_dat = data.frame(sat_clinician_dat, percent_sat_clinician)
 sat_clinician_dat = apply(sat_clinician_dat, 2, mean)
 sat_clinician_dat = data.frame(sat_clinician_dat)
-sat_clinician_dat[1,1] = round(sat_clinician_dat[1,1],0)
+sat_clinician_dat[1,1] = n_sat_clinician_dat # This is the total n which we want for the calculation later
 sat_clinician_dat
 sat_clinician_dat = data.frame(sat_clinician_dat)
 sat_clinician_dat = t(sat_clinician_dat)
