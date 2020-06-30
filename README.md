@@ -626,7 +626,7 @@ sat_non_sub_client_clinician
 
 
 non_sub_and_sub_client_clinican = rbind(sub_client_clinician, sat_non_sub_client_clinician)
-non_sub_and_sub_client_clinican$response = c("Client sub use", "Clinician sub use support", "Weighted average client / clinician non-sub use")
+non_sub_and_sub_client_clinican$response = c("Client sub use", "Clinician sub use support", "Weighted average client / clinician \n non-sub use")
 non_sub_and_sub_client_clinican
 
 ```
@@ -679,14 +679,12 @@ Create graph for client clincian sub
 
 Need average satisfaction across client and clincian
 ```{r}
-
+library(extrafont)
 non_sub_and_sub_client_clinican_text = paste0("All comparisons statistically significant at the .05 alpha level")
 grob <- grobTree(textGrob(non_sub_and_sub_client_clinican_text, x=0.05,  y=0.90, hjust=0,
-                          gp=gpar(col="red", fontsize=13, fontface="italic")))
+                          gp=gpar(col="red", fontsize=11, fontface="italic", family = "Verdana")))
 
-
-
-title_non_sub_and_sub_client_clinican = paste0("Comparing % of clients and clinicians who agree or greater with \n televideo supporting communication, manage, and recovery to support \n for substance use")
+title_non_sub_and_sub_client_clinican = paste0("Comparing % of Clients and Clinicians who Agree or Greater with \n Televideo Supporting Communication, Manage, and Recovery to \n Support n for Substance Use")
 
 plot_non_sub_and_sub_client_clinican = ggplot(non_sub_and_sub_client_clinican, aes(x = reorder(response, -percent),y =percent, fill = response))+
   geom_bar(stat = "identity", position = "dodge2")+
@@ -694,9 +692,11 @@ plot_non_sub_and_sub_client_clinican = ggplot(non_sub_and_sub_client_clinican, a
   scale_y_continuous(limits = c(0,1))+
    geom_text(aes(label = percent), position=position_dodge(width=0.90), vjust=-0.25)+
   theme(legend.position = "none")+
-  annotation_custom(grob)
-
+  scale_fill_manual(values=c("#CCFFFF", "#3399FF", "#99CCFF"))+
+  theme(text=element_text(family="Verdana", size=11))+
+  theme(plot.title = element_text(hjust = 0.5, family="Verdana", size=11))
 plot_non_sub_and_sub_client_clinican
+
 ```
 Data cleaning for preferences
 ```{r}
@@ -789,7 +789,7 @@ pref_client_clinican_text = paste0("All differences between client and clinician
 grob <- grobTree(textGrob(pref_client_clinican_text, x=0.05,  y=0.95, hjust=0,
                           gp=gpar(col="red", fontsize=10, fontface="italic")))
 
-title_prefer_service_clinician_client = c("% of preferences of clients and clinicians future service delivery models")
+title_prefer_service_clinician_client = c("% of Preferences of Clients and Clinicians Future Service Delivery Models")
 
 plot_prefer_service_clinician_client = ggplot(prefer_service_clinician_client_dat, aes(x = reorder(response_options, -percent),y =percent, fill = client_clinician))+
   geom_bar(stat = "identity", position = "dodge2")+
@@ -797,7 +797,9 @@ plot_prefer_service_clinician_client = ggplot(prefer_service_clinician_client_da
   scale_y_continuous(limits = c(0,1))+
   geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
   labs(fill = "Client or Clinician")+
-  annotation_custom(grob)
+  scale_fill_manual(values=c("#CCFFFF", "#3399FF", "#99CCFF"))+
+  theme(text=element_text(family="Verdana", size=11))+
+  theme(plot.title = element_text(hjust = 0.5, family="Verdana", size=11))
 
 plot_prefer_service_clinician_client
 ```
