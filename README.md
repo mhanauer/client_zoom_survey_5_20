@@ -20,6 +20,10 @@ library(grid)
 #TelehealthZoomclient_DATA_2020-05-20_1337
 setwd("T:/CRI_Research/telehealth_evaluation/data_codebooks/satisfaction")
 tele_zoom_dat = read.csv("TelehealthZoomclient_DATA_2020-05-26_0627.csv", header = TRUE, na.strings = c(""))
+### Get the imcomplete rate
+n_total_client_zoom =  dim(tele_zoom_dat)[1]
+
+
 tele_zoom_dat_complete  = subset(tele_zoom_dat, my_first_instrument_complete == 2)
 dim(tele_zoom_dat_complete)
 library(naniar)
@@ -28,6 +32,11 @@ miss_var_summary(tele_zoom_dat_complete)
 dim(tele_zoom_dat_complete)
 ### After removing the incomplete only found one staff who took the survey on accident
 tele_zoom_dat_complete = subset(tele_zoom_dat_complete, record_id != 37)
+n_complete_client_zoom = dim(tele_zoom_dat_complete)[1]
+complete_rate =  round(n_complete_client_zoom / n_total_client_zoom,2)
+complete_rate
+
+
 ```
 video_audio overall
 In the Zoom session you just completed with your Centerstone provider, did you use audio only or audio and video?
