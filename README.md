@@ -19,7 +19,7 @@ library(dplyr)
 library(grid)
 #TelehealthZoomclient_DATA_2020-05-20_1337
 setwd("T:/CRI_Research/telehealth_evaluation/data_codebooks/satisfaction")
-tele_zoom_dat = read.csv("TelehealthZoomclient_DATA_2020-05-26_0627.csv", header = TRUE, na.strings = c(""))
+tele_zoom_dat = read.csv("TelehealthZoomclient_DATA_2020-07-01_0907.csv", header = TRUE, na.strings = c(""))
 tele_zoom_dat_complete  = subset(tele_zoom_dat, my_first_instrument_complete == 2)
 dim(tele_zoom_dat_complete)
 library(naniar)
@@ -59,7 +59,7 @@ title_video_audio_overalll = paste0("In the Zoom session you just completed with
 plot_video_audio_overall = ggplot(video_audio_overall_dat, aes(x = reorder(video_audio_overall, -n),y =n, fill = video_audio_overall))+
   geom_bar(stat = "identity", position = "dodge2")+
   labs(title=title_video_audio_overalll, y = "Count", x = "Response option")+
-  scale_y_continuous(limits = c(0,400))+
+  scale_y_continuous(limits = c(0,1500))+
   geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
   theme(legend.position = "none")
 plot_video_audio_overall
@@ -552,7 +552,7 @@ sub_client_dat = data.frame(n = n_sub_overall_dat, percent =  percent_sub_overal
 
 
 setwd("T:/CRI_Research/telehealth_evaluation/data_codebooks/satisfaction")
-tech_cri_dat = read.csv("TelehealthSnapMDZoom_DATA_2020-05-28_1508.csv", header = TRUE, na.strings = c(""))
+tech_cri_dat = read.csv("TelehealthSnapMDZoom_DATA_2020-07-01_0908.csv", header = TRUE, na.strings = c(""))
 tech_cri_dat = tech_cri_dat[-c(1:6),]
 
 tech_cri_dat_complete  = subset(tech_cri_dat, my_first_instrument_timestamp != "[not completed]")
@@ -562,7 +562,7 @@ clincian_survey_dat = subset(tech_cri_dat_complete, job_title != 3)
 clincian_survey_dat = subset(clincian_survey_dat, service_provided___6 != 1)
 telehealth_sat_dat = clincian_survey_dat
 
-
+citation("rstanarm")
 n_telehealth_sat_dat = dim(telehealth_sat_dat)[1]
 ## Subset 6, because you are a dumbass!!!!  6 = N/A
 telehealth_sat_dat = telehealth_sat_dat[,110:113]
@@ -790,7 +790,6 @@ grob <- grobTree(textGrob(pref_client_clinican_text, x=0.05,  y=0.95, hjust=0,
                           gp=gpar(col="red", fontsize=10, fontface="italic")))
 
 title_prefer_service_clinician_client = c("% of Preferences of Clients and Clinicians Future Service Delivery Models")
-
 plot_prefer_service_clinician_client = ggplot(prefer_service_clinician_client_dat, aes(x = reorder(response_options, -percent),y =percent, fill = client_clinician))+
   geom_bar(stat = "identity", position = "dodge2")+
   labs(title=title_prefer_service_clinician_client, y = "Percent", x = "Response option")+
