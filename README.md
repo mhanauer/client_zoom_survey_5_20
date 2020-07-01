@@ -1,6 +1,8 @@
 ---
 title: "Test"
-output: html_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -91,7 +93,7 @@ title_return_client_overalll = paste0("Are you a new or returning client?", " ",
 plot_return_client_overall = ggplot(return_client_overall_dat, aes(x = reorder(return_client_overall, -n),y =n, fill = return_client_overall))+
   geom_bar(stat = "identity", position = "dodge2")+
   labs(title=title_return_client_overalll, y = "Count", x = "Response option")+
-  scale_y_continuous(limits = c(0,400))+
+  scale_y_continuous(limits = c(0,1500))+
   geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
   theme(legend.position = "none")
 plot_return_client_overall
@@ -128,7 +130,7 @@ instructions_overall_dat$percent = as.numeric(instructions_overall_dat$n / n_ins
 greater_instructions_overall = paste0(round(sum(instructions_overall_dat$percent[1:2]),2)*100, "%")
 greater_instructions_overall_text = paste0("% who found instructions very or mostly clear", " ", "=", " ", greater_instructions_overall)
 
-grob <- grobTree(textGrob(greater_instructions_overall_text, x=0.05,  y=0.80, hjust=0,
+grob <- grobTree(textGrob(greater_instructions_overall_text, x=0.05,  y=0.90, hjust=0,
                           gp=gpar(col="red", fontsize=13, fontface="italic")))
 
 ##############
@@ -142,8 +144,8 @@ title_instructions_overalll = paste0("Were the instructions for how to access yo
 plot_instructions_overall = ggplot(instructions_overall_dat, aes(x = instructions_overall,y =n, fill = instructions_overall))+
   geom_bar(stat = "identity", position = "dodge2")+
   labs(title=title_instructions_overalll, y = "Count", x = "Response option")+
-  scale_y_continuous(limits = c(0,400))+
-  geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
+  scale_y_continuous(limits = c(0,1500))+
+  geom_text(aes(label = percent), position=position_dodge(width=0.90), vjust=-0.23)+
   theme(legend.position = "none")+
   annotation_custom(grob)
 plot_instructions_overall
@@ -186,7 +188,7 @@ title_quick_overalll = paste0("Were you satisfied with how quickly you got an ap
 plot_quick_overall = ggplot(quick_overall_dat, aes(x = quick_overall,y =n, fill = quick_overall))+
   geom_bar(stat = "identity", position = "dodge2")+
   labs(title=title_quick_overalll, y = "Count", x = "Response option")+
-  scale_y_continuous(limits = c(0,400))+
+  scale_y_continuous(limits = c(0,1500))+
   geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
   theme(legend.position = "none")+
   annotation_custom(grob)
@@ -219,7 +221,7 @@ title_sat_overall = paste0("Count and % agree or greater televideo satisfaction"
 plot_telehealth_sat = ggplot(sat_overall_dat, aes(x = var_names_sat_overall,y = sat_overall_dat, fill = var_names_sat_overall))+
   geom_bar(stat = "identity")+
   labs(title=title_sat_overall, x ="Dimension of satisfaction", y = "Count of clients agree or greater")+
-  scale_y_continuous(limits = c(0,400))+
+  scale_y_continuous(limits = c(0,1500))+
   labs(fill = "")+
   geom_text(aes(label = percent_sat_overall), position=position_dodge(width=0.9), vjust=-0.25)+
   theme(legend.position = "none")
@@ -254,7 +256,7 @@ title_sub_overall = paste0("Count and % agree or greater televideo satisfaction 
 plot_telehealth_sub = ggplot(sub_overall_dat, aes(x = var_names_sub_overall,y = sub_overall_dat, fill = var_names_sub_overall))+
   geom_bar(stat = "identity")+
   labs(title=title_sub_overall, x ="Dimension of satisfaction", y = "Count of clients agree or greater")+
-  scale_y_continuous(limits = c(0,80))+
+  scale_y_continuous(limits = c(0,300))+
   labs(fill = "")+
   geom_text(aes(label = percent_sub_overall), position=position_dodge(width=0.9), vjust=-0.25)+
   theme(legend.position = "none")
@@ -292,7 +294,7 @@ title_recommend_overalll = paste0("Would you recommend Centerstone's telehealth 
 plot_recommend_overall = ggplot(recommend_overall_dat, aes(x = recommend_overall,y =n, fill = recommend_overall))+
   geom_bar(stat = "identity", position = "dodge2")+
   labs(title=title_recommend_overalll, y = "Count", x = "Response option")+
-  scale_y_continuous(limits = c(0,400))+
+  scale_y_continuous(limits = c(0,1500))+
   geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
   theme(legend.position = "none")+
   annotation_custom(grob)
@@ -339,7 +341,7 @@ expectation_overall_dat
 plot_expectation_overall = ggplot(expectation_overall_dat, aes(x = expectation_overall,y =n, fill = expectation_overall))+
   geom_bar(stat = "identity", position = "dodge2")+
   labs(title=title_expectation_overalll, y = "Count", x = "Response option")+
-  scale_y_continuous(limits = c(0,400))+
+  scale_y_continuous(limits = c(0,1500))+
   geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
   theme(legend.position = "none")+
   annotation_custom(grob)
@@ -378,7 +380,7 @@ prefer_service_overall_dat$response_option = recode(prefer_service_overall_dat$r
 plot_prefer_service_overall = ggplot(prefer_service_overall_dat, aes(x = reorder(response_option, -count),y =count, fill = response_option))+
   geom_bar(stat = "identity", position = "dodge2")+
   labs(title=title_prefer_service_overall, y = "Count", x = "Response option")+
-  scale_y_continuous(limits = c(0,400))+
+  scale_y_continuous(limits = c(0,1500))+
   geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
   theme(legend.position = "none")
 
@@ -425,7 +427,7 @@ title_state_overalll = paste0("Which state do you currently live in?", " ", "n="
 plot_state_overall = ggplot(state_overall_dat, aes(x = reorder(state_overall, -n),y =n, fill = state_overall))+
   geom_bar(stat = "identity", position = "dodge2")+
   labs(title=title_state_overalll, y = "Count", x = "Response option")+
-  scale_y_continuous(limits = c(0,400))+
+  scale_y_continuous(limits = c(0,1500))+
   geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
   theme(legend.position = "none")
 
@@ -488,7 +490,7 @@ title_race_overalll = paste0("What is your racial identity?", " ", "n=", n_race_
 plot_race_overall = ggplot(race_overall_dat, aes(x = reorder(race_overall, -n),y =n, fill = race_overall))+
   geom_bar(stat = "identity", position = "dodge2")+
   labs(title=title_race_overalll, y = "Count", x = "Response option")+
-  scale_y_continuous(limits = c(0,400))+
+  scale_y_continuous(limits = c(0,1500))+
   geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
   theme(legend.position = "none")
 
@@ -518,7 +520,7 @@ title_gender_overalll = paste0("What is your gender identity?", " ", "n=", n_gen
 plot_gender_overall = ggplot(gender_overall_dat, aes(x = reorder(gender_overall, -n),y =n, fill = gender_overall))+
   geom_bar(stat = "identity", position = "dodge2")+
   labs(title=title_gender_overalll, y = "Count", x = "Response option")+
-  scale_y_continuous(limits = c(0,400))+
+  scale_y_continuous(limits = c(0,1500))+
   geom_text(aes(label = percent), position=position_dodge(width=0.9), vjust=-0.25)+
   theme(legend.position = "none")
 
