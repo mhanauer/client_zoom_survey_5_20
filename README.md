@@ -595,6 +595,10 @@ n_sat_clinician_dat = dim(sat_clinician_dat)[1]
 sat_clinician_dat = apply(sat_clinician_dat, 2, function(x){ifelse(x > 3, 1, 0)})
 sat_clinician_dat = data.frame(sat_clinician_dat)
 
+### For canva
+canva_clinician_dat=  sat_clinician_dat
+apply(canva_clinician_dat, 2, function(x){describe.factor(x)})
+
 sat_clinician_dat = apply(sat_clinician_dat, 2, sum)
 percent_sat_clinician = round(sat_clinician_dat / n_sat_clinician_dat,2)
 sat_clinician_dat = data.frame(sat_clinician_dat, percent_sat_clinician)
